@@ -1,3 +1,5 @@
+// USED TO QUERY THE A1111 API TO MAKE VIDEOS WITH CHANGING PARAMETERS
+
 import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import path from 'path';
@@ -110,6 +112,7 @@ async function processAllCombinations() {
           for(const strength of strengths){
             for (const seed of seeds) {
               for (const steps of stepsValues) {
+                //ONLY WHEN API CRASHES AND NEED TO SKIP FIRST N ITERATIONS
                 // count++;
 
                 // if (count <= skipCount) {

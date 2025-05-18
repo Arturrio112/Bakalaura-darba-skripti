@@ -1,3 +1,4 @@
+# UISED TO MAKE A SINGLE JSON FILE FROM ALL THE METRICS FILE FOR EASIER PLOT MAKING
 import os
 import json
 BASE_PATH = r"E:\bakis\stable-diffusion-webui\outputs\img2img-images\text2video"

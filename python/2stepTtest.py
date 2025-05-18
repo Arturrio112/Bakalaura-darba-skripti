@@ -1,3 +1,4 @@
+# USED TO MAKE STATISTICAL ANALYSIS TESTS FOR TTEST AND ONE WAY ANOVA
 from scipy.stats import ttest_ind
 from scipy.stats import f_oneway
 import json
@@ -17,15 +18,11 @@ with open(json_path, 'r') as f:
 df = pd.DataFrame(data)
 df = df.rename(columns={'niqe': 'piqe'})
 df['resolution'] = df['width'].astype(str) + 'x' + df['height'].astype(str)
-# hist_bins = pd.DataFrame(df["motion_magnitude_histogram"].to_list(), columns=[f"motion_bin_{i}" for i in range(10)])
-# df = pd.concat([df, hist_bins], axis=1)
+
 
 quality_metrics = ['clip_score', 'piqe', 'ssim']
 motion_metrics = ['optical_flow_consistency', 'warping_error', 'flicker_index']
 performance_metrics = ['generation_time']
-# motion_bin_metrics = [f"motion_bin_{i}" for i in range(10)]
-
-# all_metrics = quality_metrics + motion_metrics + performance_metrics + motion_bin_metrics
 all_metrics = quality_metrics + motion_metrics + performance_metrics
 
 def run_ttest(df, group_col, metric, group1, group2):
@@ -72,9 +69,6 @@ def run_anova(df, group_col, metrics):
     for metric in metrics:
         groups = df.groupby(group_col)[metric].apply(lambda x: x.dropna().values).tolist()
 
-        # Skip if not enough groups or any group too small
-        if len(groups) < 2 or any(len(g) < 2 for g in groups):
-            continue
 
         try:
             f_stat, p_val = f_oneway(*groups)
@@ -91,7 +85,7 @@ def run_anova(df, group_col, metrics):
 
     return results
 
-# Run all t-tests
+# Run all t-tests for parametrs
 results = []
 results += run_all_pairwise_tests(df, 'sampler', all_metrics)
 results += run_all_pairwise_tests(df, 'resolution', all_metrics)
@@ -104,11 +98,11 @@ results_df = pd.DataFrame(results)
 # Save to CSV
 results_df.to_csv(os.path.join(output_dir, "ttest_results.csv"), index=False)
 
-# Optional: Save as JSON too
+# Save as JSON too
 results_df.to_json(os.path.join(output_dir, "ttest_results.json"), orient="records", indent=2)
 
 print(f"\nSaved t-test results to {output_dir}/ttest_results.csv and .json")
-
+# Run all anova tests for parametrs
 anova_results = []
 for col in ['sampler', 'resolution', 'frames', 'steps', 'seed', 'strength']:
     anova_results += run_anova(df, col, all_metrics)

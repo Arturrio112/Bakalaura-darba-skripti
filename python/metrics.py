@@ -1,4 +1,4 @@
-# pip install torch torchvision ftfy regex tqdm scikit-image opencv-python transformers
+# USED TO MEASURE METRICS FOR EACH VIDEO
 
 import os
 import json
@@ -11,7 +11,6 @@ import torchvision.transforms as T
 from transformers import CLIPProcessor, CLIPModel
 from skimage.metrics import structural_similarity as ssim
 from skimage.transform import resize
-# from basicsr.metrics.niqe import calculate_niqe as basicsr_niqe
 import pypiqe
 import warnings
 
@@ -45,7 +44,6 @@ def calculate_niqe(frames):
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             
             # Calculate PIQE score
-            # Note: PyPIQE returns score and spatial_map; we only need the score
             score, activityMask, noticeableArtifactMask, noiseMask = pypiqe.piqe(gray)
             
             scores.append(score)
