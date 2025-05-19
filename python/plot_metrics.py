@@ -45,9 +45,9 @@ def create_quality_performance_tradeoff(df):
         alpha=0.7
     )
     
-    plt.title('Quality vs Performance Tradeoff by Steps and Sampler')
-    plt.xlabel('Generation Time (seconds)')
-    plt.ylabel('Composite Quality Score (higher is better)')
+    plt.title('Kvalitātes un veiktspējas kompromisa grafiks')
+    plt.xlabel('Ģenerēšanas laiks (sekundēs)')
+    plt.ylabel('Kombinētā kvalitātes vērtība (higher is better)')
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "quality_performance_tradeoff.png"), dpi=300)
     plt.close() 
@@ -66,9 +66,9 @@ def create_quality_performance_tradeoff(df):
         sizes=(50, 200),
         alpha=0.7
     )
-    plt.title('Quality vs Performance Tradeoff by Resolution')
-    plt.xlabel('Generation Time (seconds)')
-    plt.ylabel('Composite Quality Score (higher is better)')
+    plt.title('Kvalitātes un veiktspējas kompromisa grafiks pēc izšķirtspējas parametriem')
+    plt.xlabel('Ģenerēšanas laiks (sekundēs)')
+    plt.ylabel('Kombinētā kvalitātes vērtība (augstāks ir labāks)')
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "quality_performance_tradeoff_by_resolution.png"), dpi=300)
     plt.close()
@@ -121,9 +121,9 @@ def create_parameter_impact_analysis(df, varying_params):
             impact_data_wide,
             annot=True,
             cmap='RdYlGn',
-            cbar_kws={'label': 'Normalized Impact (higher is better)'}
+            cbar_kws={'label': 'Ietekme (augstāka ir labāka)'}
         )
-        plt.title(f'Impact of {param} on Various Metrics')
+        plt.title(f'"{param}" ietekme uz metrikām')
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, f"parameter_impact_{param}.png"), dpi=300)
         plt.close()
@@ -179,9 +179,9 @@ def create_motion_analysis2(df):
                                              linewidth=2,
                                              label=legend_label))
     
-    plt.title('Motion Magnitude Histogram Comparison by Steps', fontsize=16)
-    plt.xlabel('Motion Magnitude Bucket', fontsize=14)
-    plt.ylabel('Frequency', fontsize=14)
+    plt.title('Kustības lieluma histogramma pēc “sampler” un “steps” parametriem', fontsize=16)
+    plt.xlabel('Kustības intervāls', fontsize=14)
+    plt.ylabel('Frekvence', fontsize=14)
     plt.grid(True, alpha=0.3)
 
     plt.xticks(range(len(hist_data)), range(len(hist_data)))
@@ -236,8 +236,8 @@ def create_best_configuration_analysis(df):
 
     bars = plt.barh(y_pos, top_configs['overall_score'], align='center')
     plt.yticks(y_pos, config_labels)
-    plt.xlabel('Overall Score')
-    plt.title('Top 10 Configurations by Overall Score')
+    plt.xlabel('Kopējais rezultāts')
+    plt.title('10 labāko parametru kombināciju rezultāti')
 
     for i, (_, row) in enumerate(top_configs.iterrows()):
         plt.text(
@@ -299,9 +299,9 @@ def create_motion_analysis_by_frames(df):
                 label=f"{sampler}, Frames: {frames}"
             ))
 
-    plt.title('Motion Magnitude Histogram Comparison by Frames', fontsize=16)
-    plt.xlabel('Motion Magnitude Bucket', fontsize=14)
-    plt.ylabel('Frequency', fontsize=14)
+    plt.title('Kustības lieluma histogramma pēc “sampler” un “frames” parametriem', fontsize=16)
+    plt.xlabel('Kustības intervāls', fontsize=14)
+    plt.ylabel('Frekvence', fontsize=14)
     plt.grid(True, alpha=0.3)
     plt.xticks(range(len(hist_data)), range(len(hist_data)))
     plt.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=12)
@@ -354,11 +354,11 @@ def create_motion_analysis_by_resolution(df):
                 marker=markers[i % len(markers)],
                 markersize=8,
                 linewidth=2,
-                label=f"{sampler}, Resolution: {resolution}"
+                label=f"{sampler}, Izšķirtspēja: {resolution}"
             ))
 
-    plt.title('Motion Magnitude Histogram Comparison by Resolution', fontsize=16)
-    plt.xlabel('Motion Magnitude Bucket', fontsize=14)
+    plt.title('Kustības lieluma histogramma pēc “sampler” un izšķirtspējas parametriem', fontsize=16)
+    plt.xlabel('Kustības intervāls', fontsize=14)
     plt.ylabel('Frequency', fontsize=14)
     plt.grid(True, alpha=0.3)
     plt.xticks(range(len(hist_data)), range(len(hist_data)))
@@ -382,9 +382,9 @@ def create_quality_metrics_dashboard(df):
         palette='viridis',
         ax=ax1
     )
-    ax1.set_title('CLIP Score by Sampler', fontsize=14)
+    ax1.set_title('(A) CLIP Score pēc "sampler" parametra', fontsize=14)
     ax1.set_xlabel('Sampler', fontsize=12)
-    ax1.set_ylabel('CLIP Score (higher is better)', fontsize=12)
+    ax1.set_ylabel('CLIP Score (augstāks ir labāks)', fontsize=12)
     ax1.tick_params(axis='x', rotation=45)
 
     ax2 = fig.add_subplot(gs[0, 1])
@@ -398,9 +398,9 @@ def create_quality_metrics_dashboard(df):
         palette='viridis',
         ax=ax2
     )
-    ax2.set_title('PIQE by Sampler', fontsize=14)
+    ax2.set_title('(B) PIQE pēc "sampler" parametra', fontsize=14)
     ax2.set_xlabel('Sampler', fontsize=12)
-    ax2.set_ylabel('PIQE (lower is better)', fontsize=12)
+    ax2.set_ylabel('PIQE (zemāks ir labāks)', fontsize=12)
     ax2.tick_params(axis='x', rotation=45)
 
     ax3 = fig.add_subplot(gs[1, 0])
@@ -414,9 +414,9 @@ def create_quality_metrics_dashboard(df):
         palette='viridis',
         ax=ax3
     )
-    ax3.set_title('SSIM by Sampler', fontsize=14)
+    ax3.set_title('(C) SSIM pēc sampler parametra', fontsize=14)
     ax3.set_xlabel('Sampler', fontsize=12)
-    ax3.set_ylabel('SSIM (higher is better)', fontsize=12)
+    ax3.set_ylabel('SSIM (augstāks ir labāks)', fontsize=12)
     ax3.tick_params(axis='x', rotation=45)
 
     ax4 = fig.add_subplot(gs[1, 1])
@@ -449,9 +449,9 @@ def create_quality_metrics_dashboard(df):
         palette='viridis',
         ax=ax4
     )
-    ax4.set_title('Composite Quality Score by Resolution and Sampler', fontsize=14)
-    ax4.set_xlabel('Resolution', fontsize=12)
-    ax4.set_ylabel('Quality Score (higher is better)', fontsize=12)
+    ax4.set_title('(D) Kvalitātes vērtējums pēc izšķirtspējas un "sampler" parametra', fontsize=14)
+    ax4.set_xlabel('Izšķirtspēja', fontsize=12)
+    ax4.set_ylabel('Kvalitātes vērtējums (augstāks ir labāks)', fontsize=12)
     ax4.tick_params(axis='x', rotation=45)
     ax4.legend(title='Sampler', bbox_to_anchor=(1.01, 1), loc='upper left')
 
@@ -460,8 +460,8 @@ def create_quality_metrics_dashboard(df):
     plt.close()
 
 def create_motion_metrics_dashboard(df):
-    fig = plt.figure(figsize=(18, 14))
-    gs = GridSpec(3, 2, figure=fig, hspace=0.6, wspace=0.3)  
+    fig = plt.figure(figsize=(20, 18)) 
+    gs = GridSpec(3, 2, figure=fig, height_ratios=[1, 1, 1.2], hspace=0.7, wspace=0.35)
 
     ax1 = fig.add_subplot(gs[0, 0])
     sns.boxplot(
@@ -473,9 +473,9 @@ def create_motion_metrics_dashboard(df):
         ax=ax1,
         showfliers=False
     )
-    ax1.set_title('Optical Flow Consistency by Sampler and Steps', fontsize=14)
-    ax1.set_xlabel('Sampler', fontsize=12)
-    ax1.set_ylabel('Optical Flow Consistency (higher is better)', fontsize=12)
+    ax1.set_title('(A) Optiskās plūsmas konsekvence pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax1.set_xlabel('Sampler', fontsize=14)
+    ax1.set_ylabel('Optiskās plūsmas konsekvence\n(augstāks ir labāks)', fontsize=12, labelpad=10)
     ax1.tick_params(axis='x', rotation=45)
     ax1.legend(title='Steps', bbox_to_anchor=(1.01, 1), loc='upper left')
 
@@ -489,9 +489,9 @@ def create_motion_metrics_dashboard(df):
         ax=ax2,
         showfliers=False
     )
-    ax2.set_title('Warping Error by Sampler and Steps', fontsize=14)
-    ax2.set_xlabel('Sampler', fontsize=12)
-    ax2.set_ylabel('Warping Error (lower is better)', fontsize=12)
+    ax2.set_title('(B) Fotometriskās deformācijas kļūda pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax2.set_xlabel('Sampler', fontsize=14)
+    ax2.set_ylabel('Fotometriskās deformācijas kļūda\n(zemāks ir labāks)', fontsize=14, labelpad=10)
     ax2.tick_params(axis='x', rotation=45)
     ax2.legend(title='Steps', bbox_to_anchor=(1.01, 1), loc='upper left')
 
@@ -505,22 +505,18 @@ def create_motion_metrics_dashboard(df):
         ax=ax3,
         showfliers=False
     )
-    ax3.set_title('Flicker Index by Sampler and Steps', fontsize=14)
-    ax3.set_xlabel('Sampler', fontsize=12)
-    ax3.set_ylabel('Flicker Index (lower is better)', fontsize=12)
+    ax3.set_title('(C) Mirgošanas indekss pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax3.set_xlabel('Sampler', fontsize=14)
+    ax3.set_ylabel('Mirgošanas indekss (zemāks ir labāks)', fontsize=14, labelpad=10)
     ax3.tick_params(axis='x', rotation=45)
     ax3.legend(title='Steps', bbox_to_anchor=(1.01, 1), loc='upper left')
 
     ax4 = fig.add_subplot(gs[1, 1])
-    
     samplers = df['sampler'].unique()
     colors = plt.cm.plasma(np.linspace(0, 1, len(samplers)))
-    
     for i, sampler in enumerate(samplers):
         sampler_df = df[df['sampler'] == sampler]
-        
         avg_hist = np.mean([row['motion_magnitude_histogram'] for _, row in sampler_df.iterrows()], axis=0)
-        
         ax4.plot(
             range(len(avg_hist)),
             avg_hist,
@@ -528,24 +524,19 @@ def create_motion_metrics_dashboard(df):
             color=colors[i],
             linewidth=2
         )
-    
-    ax4.set_title('Average Motion Magnitude Histogram by Sampler', fontsize=14)
-    ax4.set_xlabel('Motion Magnitude Bucket', fontsize=12)
-    ax4.set_ylabel('Frequency', fontsize=12)
+    ax4.set_title('(D) Vidēja kustības lieluma histogramma pēc "sampler" parametra', fontsize=16)
+    ax4.set_xlabel('Kustības intervāls', fontsize=14)
+    ax4.set_ylabel('Frekvence', fontsize=14, labelpad=10)
     ax4.grid(True, alpha=0.3)
     ax4.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
-    
-    ax5 = fig.add_subplot(gs[2, 0:])  
-    
+
+    ax5 = fig.add_subplot(gs[2, :]) 
     motion_df = df.copy()
     motion_df['norm_flow'] = (motion_df['optical_flow_consistency'] - motion_df['optical_flow_consistency'].min()) / (motion_df['optical_flow_consistency'].max() - motion_df['optical_flow_consistency'].min())
     motion_df['norm_warp'] = 1 - (motion_df['warping_error'] - motion_df['warping_error'].min()) / (motion_df['warping_error'].max() - motion_df['warping_error'].min())
     motion_df['norm_flicker'] = 1 - (motion_df['flicker_index'] - motion_df['flicker_index'].min()) / (motion_df['flicker_index'].max() - motion_df['flicker_index'].min())
-
     motion_df['motion_score'] = (motion_df['norm_flow'] + motion_df['norm_warp'] + motion_df['norm_flicker']) / 3
-    
     motion_by_frames = motion_df.groupby(['frames', 'sampler'])['motion_score'].mean().reset_index()
-    
     sns.lineplot(
         data=motion_by_frames,
         x='frames',
@@ -556,14 +547,13 @@ def create_motion_metrics_dashboard(df):
         linewidth=2,
         ax=ax5
     )
-    
-    ax5.set_title('Motion Quality Score by Number of Frames and Sampler', fontsize=14)
-    ax5.set_xlabel('Number of Frames', fontsize=12)
-    ax5.set_ylabel('Motion Quality Score (higher is better)', fontsize=12)
+    ax5.set_title('(F) Kustības kvalitātes vērtējums pēc "frames" un "sampler" parametriem', fontsize=16)
+    ax5.set_xlabel('Kadru skaits', fontsize=14)
+    ax5.set_ylabel('Kustības kvalitātes vērtējums (augstāks ir labāks)', fontsize=14, labelpad=12)
     ax5.grid(True, alpha=0.3)
     ax5.legend(bbox_to_anchor=(1.01, 0.5), loc='center left')
-    
-    plt.subplots_adjust(right=0.85, top=0.9)
+
+    plt.subplots_adjust(left=0.07, right=0.83, top=0.93, bottom=0.06)
     plt.savefig(os.path.join(output_dir, "motion_metrics_dashboard.png"), dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -582,9 +572,9 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax2
     )
-    ax2.set_title('Generation Time vs. Number of Steps', fontsize=14)
-    ax2.set_xlabel('Number of Steps', fontsize=12)
-    ax2.set_ylabel('Generation Time (seconds)', fontsize=12)
+    ax2.set_title('(B) Ģenerēšanas laiks pēc "steps" un "sampler" parametriem', fontsize=14)
+    ax2.set_xlabel('Steps', fontsize=12)
+    ax2.set_ylabel('Ģenerēšanas laiks (sekundēs)', fontsize=12)
     ax2.grid(True, alpha=0.3)
     ax2.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
 
@@ -598,9 +588,9 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax3
     )
-    ax3.set_title('Generation Time by Resolution + Frames + Sampler', fontsize=14)
-    ax3.set_xlabel('Resolution + Frames', fontsize=12)
-    ax3.set_ylabel('Generation Time (s)', fontsize=12)
+    ax3.set_title('(C) Ģenerēšanas laiks pēc izšķirtspējas, "frames" un "sampler" parametriem', fontsize=14)
+    ax3.set_xlabel('Izšķirtspēja un "frames"', fontsize=12)
+    ax3.set_ylabel('Ģenerēšanas laiks (s)', fontsize=12)
     ax3.tick_params(axis='x', rotation=45)
     ax3.grid(True, alpha=0.3)
     ax3.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
@@ -617,9 +607,9 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax4
     )
-    ax4.set_title('Generation Time by Sampler & Frames', fontsize=14)
+    ax4.set_title('(A) Ģenerēšanas laiks pēc "frames" un "sampler" parametriem', fontsize=14)
     ax4.set_xlabel('Frames', fontsize=12)
-    ax4.set_ylabel('Mean Generation Time (s)', fontsize=12)
+    ax4.set_ylabel('Vid. Ģenerēšanas laiks (s)', fontsize=12)
     ax4.grid(True, alpha=0.3)
     ax4.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
 
@@ -627,6 +617,31 @@ def create_performance_dashboard(df):
     plt.savefig(os.path.join(output_dir, "performance_dashboard.png"), dpi=300, bbox_inches='tight')
     plt.close()
 
+def create_correlation_matrix(df):
+    # Select the metrics and parameters to analyze
+    df['resolution'] = df['width'] * df['height']
+    analysis_cols = quality_metrics + motion_metrics + performance_metrics + [
+        p for p in ['steps', 'frames', 'resolution'] if p in df.columns and pd.api.types.is_numeric_dtype(df[p])
+    ]
+    
+    # Create correlation matrix
+    plt.figure(figsize=(12, 10))
+    corr_matrix = df[analysis_cols].corr()
+    
+    # Plot correlation heatmap
+    sns.heatmap(
+        corr_matrix, 
+        annot=True, 
+        cmap='coolwarm', 
+        vmin=-1, 
+        vmax=1, 
+        center=0,
+        fmt='.2f'
+    )
+    plt.title('Parametru un metriku korelācijas matrica')
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "correlation_matrix.png"), dpi=300)
+    plt.close()
 
 potential_vars = ['steps', 'frames', 'seed', 'strength', 'sampler', 'width', 'height']
 varying_params = [param for param in potential_vars if df[param].nunique() > 1]
@@ -637,9 +652,6 @@ create_quality_performance_tradeoff(df)
 
 print("Creating parameter impact analysis...")
 create_parameter_impact_analysis(df, varying_params)
-
-print("Creating motion analysis...")
-create_motion_analysis(df)
 
 print("Creating motion analysis2...")
 create_motion_analysis2(df)
@@ -656,11 +668,14 @@ create_best_configuration_analysis(df)
 print("Creating quality dashboard...")
 create_quality_metrics_dashboard(df)
 
-print("Creating metrics dashboard...")
+print("Creating motion dashboard...")
 create_motion_metrics_dashboard(df)
 
 print("Creating performance dashboard...")
 create_performance_dashboard(df)
+
+print("Creating correlation matrix...")
+create_correlation_matrix(df)
 
 print("Analysis complete! All graphs saved to:", output_dir)
 
