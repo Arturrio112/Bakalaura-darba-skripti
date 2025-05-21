@@ -4,6 +4,7 @@ opencv_python==4.11.0.86
 pandas==2.2.3
 Pillow==11.2.1
 pypiqe==1.2
+scikit_learn==1.6.1
 scipy==1.15.3
 seaborn==0.13.2
 skimage==0.0

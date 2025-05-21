@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from matplotlib.gridspec import GridSpec
-
+from sklearn.linear_model import LinearRegression
 # Load data
 json_path = r"E:\bakis\pipelineScripts\all.json"
 output_dir = r"E:\bakis\graphs"
@@ -23,7 +23,6 @@ quality_metrics = ['clip_score', 'piqe', 'ssim']
 motion_metrics = ['optical_flow_consistency', 'warping_error', 'flicker_index']
 performance_metrics = ['generation_time']
 
-# 1. Quality vs Performance Tradeoff Analysis
 def create_quality_performance_tradeoff(df):
     plt.figure(figsize=(12, 8))
 
@@ -72,6 +71,31 @@ def create_quality_performance_tradeoff(df):
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "quality_performance_tradeoff_by_resolution.png"), dpi=300)
     plt.close()
+
+    plt.figure(figsize=(12, 8))
+    scatter3 = sns.scatterplot(
+        data=df[df['quality_score'] > 0.6], 
+        x='generation_time', 
+        y='quality_score',
+        hue='frames',  
+        size='steps',
+        style='sampler',
+        palette='viridis',
+        sizes=(50, 200),
+        alpha=0.7
+    )
+    
+    plt.title('Kvalitātes un veiktspējas kompromisa grafiks(Kreisā augšējā stūra palielinājums)')
+    plt.xlabel('Ģenerēšanas laiks (sekundēs)')
+    plt.ylabel('Kombinētā kvalitātes vērtība (higher is better)')
+    plt.legend(
+        bbox_to_anchor=(1.05, 1), 
+        loc='upper left',
+        borderaxespad=0.
+    )
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "quality_performance_tradeoff_upper_left.png"), dpi=300, bbox_inches='tight')
+    plt.close() 
 
 def create_parameter_impact_analysis(df, varying_params):
     df = df.copy()
@@ -212,7 +236,28 @@ def create_best_configuration_analysis(df):
     df['performance_score'] = 1 - (df['generation_time'] - df['generation_time'].min()) / (df['generation_time'].max() - df['generation_time'].min() + 1e-10)
     df['overall_score'] = df['quality_score'] * 0.7 + df['performance_score'] * 0.3
 
-    group_cols = ['model', 'sampler', 'steps', 'frames', 'width', 'height']
+    group_cols = [
+        "prompt",
+        "n_prompt",
+        "model",
+        "cfg_scale",
+        "eta",
+        "batch_count",
+        "do_vid2vid",
+        "vid2vid_startFrame",
+        "inpainting_frames",
+        "inpainting_weights",
+        "fps",
+        "add_soundtrack",
+        "soundtrack_path",
+        "width",
+        "height",
+        "sampler",
+        "strength",
+        "frames",
+        "seed",
+        "steps"
+    ]
     agg_df = df.groupby(group_cols, as_index=False).agg({
         'piqe': 'mean',
         'ssim': 'mean',
@@ -230,7 +275,7 @@ def create_best_configuration_analysis(df):
     y_pos = np.arange(len(top_configs))
 
     config_labels = [
-        f"Sampler: {row['sampler']}, Steps: {row['steps']}, H: {row['height']}, W: {row['width']}"
+        f"Sampler: {row['sampler']}, Steps: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
         for _, row in top_configs.iterrows()
     ]
 
@@ -250,8 +295,79 @@ def create_best_configuration_analysis(df):
     plt.savefig(os.path.join(output_dir, "best_configurations.png"), dpi=300, bbox_inches='tight')
     plt.close()
 
-    top_configs.to_csv(os.path.join(output_dir, "top_configurations.csv"), index=False)
+def create_best_configuration_analysis_no_strength(df):
 
+    df['normalized_piqe'] = 1 - (df['piqe'] - df['piqe'].min()) / (df['piqe'].max() - df['piqe'].min() + 1e-10)
+    df['normalized_ssim'] = (df['ssim'] - df['ssim'].min()) / (df['ssim'].max() - df['ssim'].min() + 1e-10)
+    df['normalized_clip'] = (df['clip_score'] - df['clip_score'].min()) / (df['clip_score'].max() - df['clip_score'].min())
+
+    df['norm_flow'] = (df['optical_flow_consistency'] - df['optical_flow_consistency'].min()) / (df['optical_flow_consistency'].max() - df['optical_flow_consistency'].min() + 1e-10)
+    df['norm_flicker'] = 1 - (df['flicker_index'] - df['flicker_index'].min()) / (df['flicker_index'].max() - df['flicker_index'].min() + 1e-10)
+    df['norm_warping'] = 1 - (df['warping_error'] - df['warping_error'].min()) / (df['warping_error'].max() - df['warping_error'].min() + 1e-10)
+
+    df['quality_score'] = (((df['normalized_piqe'] + df['normalized_ssim'] + df['normalized_clip']) / 3)*0.5 + ((df['norm_flow'] + df['norm_flicker'] + df['norm_warping']) / 3)*0.5)
+
+    df['performance_score'] = 1 - (df['generation_time'] - df['generation_time'].min()) / (df['generation_time'].max() - df['generation_time'].min() + 1e-10)
+    df['overall_score'] = df['quality_score'] * 0.7 + df['performance_score'] * 0.3
+
+    group_cols = [
+        "prompt",
+        "n_prompt",
+        "model",
+        "cfg_scale",
+        "eta",
+        "batch_count",
+        "do_vid2vid",
+        "vid2vid_startFrame",
+        "inpainting_frames",
+        "inpainting_weights",
+        "fps",
+        "add_soundtrack",
+        "soundtrack_path",
+        "width",
+        "height",
+        "sampler",
+        # "strength",
+        "frames",
+        "seed",
+        "steps"
+    ]
+    agg_df = df.groupby(group_cols, as_index=False).agg({
+        'piqe': 'mean',
+        'ssim': 'mean',
+        'optical_flow_consistency': 'mean',
+        'flicker_index': 'mean',
+        'generation_time': 'mean',
+        'quality_score': 'mean',
+        'performance_score': 'mean',
+        'overall_score': 'max' 
+    })
+
+    top_configs = agg_df.sort_values('overall_score', ascending=False).head(10)
+
+    plt.figure(figsize=(14, 10))
+    y_pos = np.arange(len(top_configs))
+
+    config_labels = [
+        f"Sampler: {row['sampler']}, Steps: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
+        for _, row in top_configs.iterrows()
+    ]
+
+    bars = plt.barh(y_pos, top_configs['overall_score'], align='center')
+    plt.yticks(y_pos, config_labels)
+    plt.xlabel('Kopējais rezultāts')
+    plt.title('10 labāko parametru kombināciju rezultāti(Ignorējot "strength" parametru)')
+
+    for i, (_, row) in enumerate(top_configs.iterrows()):
+        plt.text(
+            row['overall_score'] + 0.01,
+            i,
+            f"Qual: {row['quality_score']:.2f}, Perf: {row['performance_score']:.2f}",
+            va='center'
+        )
+
+    plt.savefig(os.path.join(output_dir, "best_configurations_no_strength.png"), dpi=300, bbox_inches='tight')
+    plt.close()
 
 def create_motion_analysis_by_frames(df):
     plt.figure(figsize=(14, 10))
@@ -618,17 +734,15 @@ def create_performance_dashboard(df):
     plt.close()
 
 def create_correlation_matrix(df):
-    # Select the metrics and parameters to analyze
+
     df['resolution'] = df['width'] * df['height']
     analysis_cols = quality_metrics + motion_metrics + performance_metrics + [
         p for p in ['steps', 'frames', 'resolution'] if p in df.columns and pd.api.types.is_numeric_dtype(df[p])
     ]
     
-    # Create correlation matrix
     plt.figure(figsize=(12, 10))
     corr_matrix = df[analysis_cols].corr()
     
-    # Plot correlation heatmap
     sns.heatmap(
         corr_matrix, 
         annot=True, 
@@ -664,6 +778,9 @@ create_motion_analysis_by_resolution(df)
 
 print("Creating best configuration analysis...")
 create_best_configuration_analysis(df)
+
+print("Creating best configuration analysis without strength parameter...")
+create_best_configuration_analysis_no_strength(df)
 
 print("Creating quality dashboard...")
 create_quality_metrics_dashboard(df)

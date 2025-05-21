@@ -1,4 +1,4 @@
-# UISED TO MAKE A SINGLE JSON FILE FROM ALL THE METRICS FILE FOR EASIER PLOT MAKING
+# USED TO MAKE A SINGLE JSON FILE FROM ALL THE METRICS FILE FOR EASIER PLOT MAKING
 import os
 import json
 BASE_PATH = r"E:\bakis\stable-diffusion-webui\outputs\img2img-images\text2video"
@@ -22,7 +22,7 @@ def main():
         end_path = os.path.join(END_PATH, "all.json")
         with open(end_path, 'w', encoding='utf-8') as f:
             json.dump(end_json, f, indent=2)
-        print(f"✔ Saved all metrics to {end_path}")
+        print(f"Saved all metrics to {end_path}")
             
     except Exception as e:
         print(f"Error in main function: {e}")

@@ -18,10 +18,8 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-# ========== CONFIG ==========
 BASE_PATH = r"E:\bakis\stable-diffusion-webui\outputs\img2img-images\text2video"
 device = "cuda" if torch.cuda.is_available() else "cpu"
-# ============================
 
 # Load CLIP model once
 clip_model = CLIPModel.from_pretrained("laion/CLIP-ViT-H-14-laion2B-s32B-b79K")
@@ -144,9 +142,6 @@ def process_video_folder(folder):
             
         # Load frames
         frames = load_frames(folder)
-        if len(frames) < 2:
-            print(f"Not enough frames in {folder}, skipping...")
-            return
             
         # Run metrics
         print("Calculating CLIP score...")
@@ -174,7 +169,7 @@ def process_video_folder(folder):
         metrics_path = os.path.join(folder, "metrics.json")
         with open(metrics_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
-        print(f"✔ Saved metrics to {metrics_path}")
+        print(f"Saved metrics to {metrics_path}")
         
     except Exception as e:
         print(f"Error processing folder {folder}: {e}")
