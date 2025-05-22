@@ -22,7 +22,12 @@ df = df.rename(columns={'niqe': 'piqe'}) # CHANGE THE NIQE COLUMN TO PIQE, BECAU
 quality_metrics = ['clip_score', 'piqe', 'ssim']
 motion_metrics = ['optical_flow_consistency', 'warping_error', 'flicker_index']
 performance_metrics = ['generation_time']
-
+# Needed to display lv instead of eng
+param_display_names = {
+    'resolution': 'izšķirtspēja',
+    'steps': 'soļi',
+    'frames': 'kadri',
+}
 def create_quality_performance_tradeoff(df):
     plt.figure(figsize=(12, 8))
 
@@ -147,8 +152,10 @@ def create_parameter_impact_analysis(df, varying_params):
             cmap='RdYlGn',
             cbar_kws={'label': 'Ietekme (augstāka ir labāka)'}
         )
-        plt.title(f'"{param}" ietekme uz metrikām')
+        param_display = param_display_names.get(param, param)
+        plt.title(f'"{param_display}" ietekme uz metrikām')
         plt.tight_layout()
+        plt.ylabel(param_display)
         plt.savefig(os.path.join(output_dir, f"parameter_impact_{param}.png"), dpi=300)
         plt.close()
 
@@ -203,7 +210,7 @@ def create_motion_analysis2(df):
                                              linewidth=2,
                                              label=legend_label))
     
-    plt.title('Kustības lieluma histogramma pēc “sampler” un “steps” parametriem', fontsize=16)
+    plt.title('Kustības lieluma histogramma pēc “sampler” un “soļi” parametriem', fontsize=16)
     plt.xlabel('Kustības intervāls', fontsize=14)
     plt.ylabel('Frekvence', fontsize=14)
     plt.grid(True, alpha=0.3)
@@ -275,7 +282,7 @@ def create_best_configuration_analysis(df):
     y_pos = np.arange(len(top_configs))
 
     config_labels = [
-        f"Sampler: {row['sampler']}, Steps: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
+        f"Sampler: {row['sampler']}, S: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
         for _, row in top_configs.iterrows()
     ]
 
@@ -349,7 +356,7 @@ def create_best_configuration_analysis_no_strength(df):
     y_pos = np.arange(len(top_configs))
 
     config_labels = [
-        f"Sampler: {row['sampler']}, Steps: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
+        f"Sampler: {row['sampler']}, S: {row['steps']}, H: {row['height']}, W: {row['width']}, F: {row['frames']}"
         for _, row in top_configs.iterrows()
     ]
 
@@ -415,7 +422,7 @@ def create_motion_analysis_by_frames(df):
                 label=f"{sampler}, Frames: {frames}"
             ))
 
-    plt.title('Kustības lieluma histogramma pēc “sampler” un “frames” parametriem', fontsize=16)
+    plt.title('Kustības lieluma histogramma pēc “sampler” un “kadri” parametriem', fontsize=16)
     plt.xlabel('Kustības intervāls', fontsize=14)
     plt.ylabel('Frekvence', fontsize=14)
     plt.grid(True, alpha=0.3)
@@ -589,7 +596,7 @@ def create_motion_metrics_dashboard(df):
         ax=ax1,
         showfliers=False
     )
-    ax1.set_title('(A) Optiskās plūsmas konsekvence pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax1.set_title('(A) Optiskās plūsmas konsekvence pēc "sampler" un "soļi" parametriem', fontsize=16)
     ax1.set_xlabel('Sampler', fontsize=14)
     ax1.set_ylabel('Optiskās plūsmas konsekvence\n(augstāks ir labāks)', fontsize=12, labelpad=10)
     ax1.tick_params(axis='x', rotation=45)
@@ -605,7 +612,7 @@ def create_motion_metrics_dashboard(df):
         ax=ax2,
         showfliers=False
     )
-    ax2.set_title('(B) Fotometriskās deformācijas kļūda pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax2.set_title('(B) Fotometriskās deformācijas kļūda pēc "sampler" un "soļi" parametriem', fontsize=16)
     ax2.set_xlabel('Sampler', fontsize=14)
     ax2.set_ylabel('Fotometriskās deformācijas kļūda\n(zemāks ir labāks)', fontsize=14, labelpad=10)
     ax2.tick_params(axis='x', rotation=45)
@@ -621,7 +628,7 @@ def create_motion_metrics_dashboard(df):
         ax=ax3,
         showfliers=False
     )
-    ax3.set_title('(C) Mirgošanas indekss pēc "sampler" un "steps" parametriem', fontsize=16)
+    ax3.set_title('(C) Mirgošanas indekss pēc "sampler" un "soļi" parametriem', fontsize=16)
     ax3.set_xlabel('Sampler', fontsize=14)
     ax3.set_ylabel('Mirgošanas indekss (zemāks ir labāks)', fontsize=14, labelpad=10)
     ax3.tick_params(axis='x', rotation=45)
@@ -663,7 +670,7 @@ def create_motion_metrics_dashboard(df):
         linewidth=2,
         ax=ax5
     )
-    ax5.set_title('(F) Kustības kvalitātes vērtējums pēc "frames" un "sampler" parametriem', fontsize=16)
+    ax5.set_title('(F) Kustības kvalitātes vērtējums pēc "kadri" un "sampler" parametriem', fontsize=16)
     ax5.set_xlabel('Kadru skaits', fontsize=14)
     ax5.set_ylabel('Kustības kvalitātes vērtējums (augstāks ir labāks)', fontsize=14, labelpad=12)
     ax5.grid(True, alpha=0.3)
@@ -688,8 +695,8 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax2
     )
-    ax2.set_title('(B) Ģenerēšanas laiks pēc "steps" un "sampler" parametriem', fontsize=14)
-    ax2.set_xlabel('Steps', fontsize=12)
+    ax2.set_title('(B) Ģenerēšanas laiks pēc "soļi" un "sampler" parametriem', fontsize=14)
+    ax2.set_xlabel('Soļi', fontsize=12)
     ax2.set_ylabel('Ģenerēšanas laiks (sekundēs)', fontsize=12)
     ax2.grid(True, alpha=0.3)
     ax2.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
@@ -704,8 +711,8 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax3
     )
-    ax3.set_title('(C) Ģenerēšanas laiks pēc izšķirtspējas, "frames" un "sampler" parametriem', fontsize=14)
-    ax3.set_xlabel('Izšķirtspēja un "frames"', fontsize=12)
+    ax3.set_title('(C) Ģenerēšanas laiks pēc izšķirtspējas, "kadri" un "sampler" parametriem', fontsize=14)
+    ax3.set_xlabel('Izšķirtspēja un kadru skaits', fontsize=12)
     ax3.set_ylabel('Ģenerēšanas laiks (s)', fontsize=12)
     ax3.tick_params(axis='x', rotation=45)
     ax3.grid(True, alpha=0.3)
@@ -723,8 +730,8 @@ def create_performance_dashboard(df):
         palette='inferno',
         ax=ax4
     )
-    ax4.set_title('(A) Ģenerēšanas laiks pēc "frames" un "sampler" parametriem', fontsize=14)
-    ax4.set_xlabel('Frames', fontsize=12)
+    ax4.set_title('(A) Ģenerēšanas laiks pēc "kadri" un "sampler" parametriem', fontsize=14)
+    ax4.set_xlabel('Kadri', fontsize=12)
     ax4.set_ylabel('Vid. Ģenerēšanas laiks (s)', fontsize=12)
     ax4.grid(True, alpha=0.3)
     ax4.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
